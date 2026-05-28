@@ -1,52 +1,78 @@
+import 'dotenv/config'
 import express from "express";
+import { supabase } from './lib/supabase.js'
+import routes from './routes/index.js';
 
 const app = express();
-app.use(express.json());
+routes(app);
 
-const livros = [
+//Rota para listar todos os livros cadastrados 
+// app.get("/livros", async (req, res) => {
+    
+//     const { data, error } = supabase
+//         .from('livros') //Nome da tabela no supabase
+//         .select('*')
 
-    {id: 1, titulo: "O Senhor dos Anéis"},
-    {id: 2, titulo: "O Hobbit"},
-    {id: 3, titulo: "O Silmarillion"}
+//     if (error) return res.status(500).json({ error: error.message })
+//     res.json(data)    
+// });
 
-]
-
-//Busca os livros dentro do array LIVROS e converte o id dele para Number.
-function buscaLivro (id) {
-    return livros.findIndex(livro => {
-        return livro.id === Number(id);
-    })
-}
-
-app.get("/", (req, res) => {
-    res.status(200).send("API RODANDO");
+//Rota para buscar somente um livro
+app.get("/livros/:id", async (req, res) => {
+     
+    const { data, error } = await supabase
+        .from('livros')
+        .select('*')
+        .eq('id', req.params.id)
+        .single()
+    
+    if (error) return res.status(404).json({ error: 'Livro não encontrado' })
+    res.json(data)
 })
 
-app.get("/livros", (req, res) => {
-    res.status(200).json(livros);
+//Rota para criar os livros
+app.post("/livros", async (req, res) => {
+     
+    const { titulo } = req.body
+
+    const { data, error } = await supabase
+        .from('livros')
+        .insert({ titulo })
+        .select()
+        .single()
+    
+    if (error) return res.status(500).json({ error: error.message })
+    res.status(201).json(data)
+
 });
 
-app.get("/livros/:id", (req, res) => {
-    //Variável utilizada para armzaenar o resultado da nossa função de buscaLivro
-    const index = buscaLivro(req.params.id);
-    res.status(200).json(livros[index]);
+//Rota para alterar a informação de um livro
+app.put("/livros/:id", async (req, res) => {
+
+    const { titulo } = req.body
+
+    const { data,error } = await supabase
+        .from('livros')
+        .update({ titulo })
+        .eq('id', req.params.id)
+        .select()
+        .single()
+
+    if (error) return res.status(500).json({ error: error.message })
+    res.json(data) 
+
 })
 
-app.post("/livros", (req, res) => {
-    livros.push(req.body);
-    res.status(201).send("Livro adicionado com sucesso");
-});
+app.delete("/livros/:id", async (req, res) => {
+     
+    const { error } = await supabase
+        .from('livros')
+        .delete()
+        .eq('id', req.params.id)
 
-app.put("/livros/:id", (req, res) => {
-    const index = buscaLivro(req.params.id);
-    livros[index].titulo = req.body.titulo;
-    res.status(200).json(livros[index]);
-})
+    if (error) return res.status(500).json({ error: error.message })
+    res.status(204).send()
 
-app.delete("/livros/:id", (req, res) => {
-    const index = buscaLivro(req.params.id);
-    livros.splice(index, 1);
-    res.status(200).send(`Livro removido.`);
 })
 
 export default app;
