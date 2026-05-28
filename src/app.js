@@ -19,6 +19,10 @@ app.get("/livros", (req, res) => {
     res.status(200).json(livros);
 });
 
+app.get("/livros/:id", (req, res) => {
+
+})
+
 app.post("/livros", (req, res) => {
     livros.push(req.body);
     res.status(201).send("Livro adicionado com sucesso");
