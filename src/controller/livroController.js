@@ -4,7 +4,7 @@ class LivroController {
 
     static async listarLivros (req, res) {
         
-        const { data, error } = supabase
+        const { data, error } = await supabase
             .from('livros') //Nome da tabela no supabase
             .select('*')
         
@@ -25,7 +25,7 @@ class LivroController {
                     .single()
                 
                  
-            res.status(201).json(data)
+            res.status(201).json({ message: `O livro ${ titulo } foi criado com sucesso` })
 
         } catch (error) {
         
@@ -36,6 +36,69 @@ class LivroController {
 
     }
 
+    static async listaLivroPorId (req, res) {
+
+        try {
+            const { data, error } = await supabase
+                    .from('livros')
+                    .select('*')
+                    .eq('id', req.params.id)
+                    .single()
+
+            res.json(data)
+        
+        } catch (error) {
+
+           res.status(404).json({ error: 'Livro não encontrado' })
+    
+        }
+
+    }
+
+    static async atualizaLivro (req, res){
+
+        try {
+
+            const { titulo } = req.body
+
+            const { data,error } = await supabase
+                .from('livros')
+                .update({ titulo })
+                .eq('id', req.params.id)
+                .select()
+                .single()
+
+    
+                res.json(`Atualizado o titulo do livro, novo titulo : ${ titulo }`)
+
+        } catch (error) {
+
+            res.status(500).json({ error: error.message })
+        
+        }
+
+    }
+
+    static async deletarLivro( req, res){
+
+        try {
+        
+            const { error } = await supabase
+                .from('livros')
+                .delete()
+                .eq('id', req.params.id)
+
+    
+                res.status(200).send("Livro deletado com sucesso")
+
+        } catch (error) {
+        
+            res.status(500).json({ error: error.message })
+
+        }
+
+    }
+ 
 }
 
 export default LivroController;
