@@ -16,11 +16,11 @@ class LivroController {
 
         try {
 
-             const { titulo } = req.body
+             const { titulo, isbn, preco, paginas, ano_publicacao, genero, estoque, sinopse  } = req.body
             
                 const { data, error } = await supabase
                     .from('livros')
-                    .insert({ titulo })
+                    .insert({ titulo, isbn, preco, paginas, ano_publicacao, genero, estoque, sinopse })
                     .select()
                     .single()
                 
@@ -59,11 +59,11 @@ class LivroController {
 
         try {
 
-            const { titulo } = req.body
+            const { titulo, isbn, preco, paginas, ano_publicacao, genero, estoque, sinopse } = req.body
 
             const { data,error } = await supabase
                 .from('livros')
-                .update({ titulo })
+                .update({ titulo, isbn, preco, paginas, ano_publicacao, genero, estoque, sinopse })
                 .eq('id', req.params.id)
                 .select()
                 .single()
