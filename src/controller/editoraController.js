@@ -2,7 +2,7 @@ import { supabase } from "../lib/supabase.js";
 
 class EditoraController {
 
-    static async listarEditoras(req, res) {
+    static async listarEditoras(req, res, next) {
 
         try {
             
@@ -21,7 +21,7 @@ class EditoraController {
 
     }
 
-    static async cadastrarEditora (req, res) {
+    static async cadastrarEditora (req, res, next) {
 
         try {
             
@@ -44,7 +44,7 @@ class EditoraController {
         }
     }
 
-    static async listarEditoraPorId (req, res) {
+    static async listarEditoraPorId (req, res, next) {
 
         try {
             
@@ -65,7 +65,7 @@ class EditoraController {
 
     }
 
-    static async atualizarEditora (req, res) {
+    static async atualizarEditora (req, res, next) {
 
         try {
 
@@ -73,7 +73,8 @@ class EditoraController {
 
             const { data, error } = await supabase
             .from('editoras')
-            .insert({ nome_editora, pais_editora, site_editora, email_contato })
+            .update({ nome_editora, pais_editora, site_editora, email_contato })
+            .eq("id", req.params.id)
             .select()
             .single()
 
@@ -88,7 +89,7 @@ class EditoraController {
 
     }
 
-    static async deletarEditora (req, res) {
+    static async deletarEditora (req, res, next) {
 
         try {
             

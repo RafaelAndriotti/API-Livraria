@@ -2,7 +2,7 @@ import { supabase } from '../lib/supabase.js';
 
 class LivroController {
 
-    static async listarLivros (req, res) {
+    static async listarLivros (req, res, next) {
         
         const { data, error } = await supabase
             .from('livros') //Nome da tabela no supabase
@@ -12,15 +12,15 @@ class LivroController {
         res.json(data)
     }
 
-    static async cadastrarLivro (req, res) {
+    static async cadastrarLivro (req, res, next) {
 
         try {
 
-             const { titulo, isbn, preco, paginas, ano_publicacao, genero, estoque, sinopse  } = req.body
+             const { titulo, autor_id, editora_id, isbn, preco, paginas, ano_publicacao, genero, estoque, sinopse  } = req.body
             
                 const { data, error } = await supabase
                     .from('livros')
-                    .insert({ titulo, isbn, preco, paginas, ano_publicacao, genero, estoque, sinopse })
+                    .insert({ titulo, autor_id, editora_id, isbn, preco, paginas, ano_publicacao, genero, estoque, sinopse })
                     .select()
                     .single()
                 
@@ -36,7 +36,7 @@ class LivroController {
 
     }
 
-    static async listaLivroPorId (req, res) {
+    static async listaLivroPorId (req, res, next) {
 
         try {
             const { data, error } = await supabase
@@ -55,7 +55,7 @@ class LivroController {
 
     }
 
-    static async atualizaLivro (req, res){
+    static async atualizaLivro (req, res, next){
 
         try {
 
@@ -69,7 +69,7 @@ class LivroController {
                 .single()
 
     
-                res.json(`Atualizado o titulo do livro, novo titulo : ${ titulo }`)
+                res.json(`Informacoes do livro ${data.titulo} atualizadas com sucesso`)
 
         } catch (error) {
 
@@ -79,7 +79,7 @@ class LivroController {
 
     }
 
-    static async deletarLivro( req, res){
+    static async deletarLivro( req, res, next){
 
         try {
         
