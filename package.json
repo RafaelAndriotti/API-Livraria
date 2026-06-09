@@ -16,7 +16,8 @@
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
     "nodemon": "^3.1.14",
-    "supabase-js": "^0.0.1-security"
+    "supabase-js": "^0.0.1-security",
+    "zod": "^4.4.3"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",

@@ -3,51 +3,38 @@ import { supabase } from "../lib/supabase.js";
 class EditoraController {
 
     static async listarEditoras(req, res, next) {
-
-        try {
             
             const{ data, error } = await supabase
 
                 .from('editoras')
                 .select("*")
 
+            if(error)return next(error)
+
             res.json(data)
-
-        } catch (error) {
-
-            res.status(500).json({ error: error.message })
-
-        }
 
     }
 
     static async cadastrarEditora (req, res, next) {
-
-        try {
             
             const{ nome_editora, pais_editora, site_editora, email_contato} = req.body
 
+            // eslint-disable-next-line no-unused-vars
             const { data, error } = await supabase
                 .from('editoras')
                 .insert({ nome_editora, pais_editora, site_editora, email_contato })
                 .select()
                 .single()
             
-            if(error) return res.status(500).json({ error: error.message });
+            if(error) return next(error)
 
             res.status(201).send(`A editora ${nome_editora} foi criada com sucesso.`);
 
-        } catch (error) {
-            
-            res.status(500).json({ error: error.message });
-
-        }
+        
     }
 
     static async listarEditoraPorId (req, res, next) {
-
-        try {
-            
+   
             const { data, error } = await supabase
                 .from('editoras')
                 .select("*")
@@ -55,19 +42,13 @@ class EditoraController {
                 .select()
                 .single()
 
+            if(error)return next(error)
+
             res.json(data)    
-
-            if(error) return res.status(500).json({ error: error.message });
-
-        } catch (error) {
-            res.status(500).json({ error: error.message });
-        }
 
     }
 
     static async atualizarEditora (req, res, next) {
-
-        try {
 
             const{ nome_editora, pais_editora, site_editora, email_contato} = req.body
 
@@ -78,33 +59,23 @@ class EditoraController {
             .select()
             .single()
 
-            res.status(201).send("Editora atualizada com sucesso.");
-        
-        } catch (error) {
-            
-            res.status(500).json({ error: error.message })
+            if(error)return next(error)
 
-        }
+            res.status(201).send(`Editora atualizada com sucesso ${data.nome_editora}.`);
             
 
     }
 
     static async deletarEditora (req, res, next) {
-
-        try {
-            
+  
             const { error } = await supabase
                 .from('editoras')
                 .delete()
                 .eq("id", req.params.id)
 
-                res.status(200).send("Editora deletada com sucesso.")
+            if(error)return next(error)
 
-        } catch (error) {
-            
-            res.status(500).json({ error: error.message })
-
-        }
+            res.status(200).send("Editora deletada com sucesso.")
 
     }
 

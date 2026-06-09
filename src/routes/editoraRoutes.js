@@ -1,12 +1,13 @@
 import express from "express";
 import EditoraController from "../controller/editoraController.js";
+import { validaEditora } from "../validators/editoraValidator.js";
 
 const routes = express.Router();
 
-routes.get("/editoras", EditoraController.listarEditoras);
-routes.post("/editoras", EditoraController.cadastrarEditora);
-routes.get("/editoras/:id", EditoraController.listarEditoraPorId);
-routes.put("/atualizarEditora/:id", EditoraController.atualizarEditora);
-routes.delete("/deletarEditora/:id", EditoraController.deletarEditora);
+routes.get("/editoras",validaEditora , EditoraController.listarEditoras);
+routes.post("/editoras",validaEditora , EditoraController.cadastrarEditora);
+routes.get("/editoras/:id",validaEditora , EditoraController.listarEditoraPorId);
+routes.put("/editoras/:id",validaEditora , EditoraController.atualizarEditora);
+routes.delete("/editoras/:id",validaEditora , EditoraController.deletarEditora);
 
 export default routes;

@@ -4,48 +4,35 @@ class AutoresController {
 
     static async listarAutores (req, res, next) {
 
-        try {
+        
             const { data, error } = await supabase
                 .from('autores')
                 .select("*")
 
+            if(error) return next(error)
             res.json(data)
 
-            } catch (error) {
-            
-            res.status(500).json({ error: error.message })
-
-        }
-        
     }
 
 
     static async cadastrarAutor (req, res, next) {
         
-        try {
-
             const { autor_nome, nacionalidade_autor, data_nascimento, biografia } = req.body
             
+            // eslint-disable-next-line no-unused-vars
             const { data, error } = await supabase
                 .from('autores')
                 .insert({ autor_nome, nacionalidade_autor, data_nascimento, biografia })
                 .select()
                 .single()
 
-            if(error) return res.status(500).json({ error: error.message })
+            if(error) return next(error)
         
             res.status(201).json({ message: `O autor ${autor_nome} foi cadastrado com sucesso.` })
-
-        } catch (error) {
-
-            res.status(500).json({ error: error.message })
-
-        }
+    
     }
 
     static async listarAutorPorId (req, res, next) {
-
-        try {
             
             const { data, error } = await supabase
                 .from('autores')
@@ -53,20 +40,13 @@ class AutoresController {
                 .eq("autor_id", req.params.id)
                 .single()
 
-            if(error) return res.status(500).json({ error: error.message })
+            if(error)return next(error)
 
             res.json(data)
-
-        } catch (error) {
-            
-            res.status(500).json({ error: error.message })
-
-        }
+ 
     }
 
     static async atualizarAutor (req, res, next){
-
-        try {
 
             const { autor_nome, nacionalidade_autor, data_nascimento, biografia } = req.body
 
@@ -77,32 +57,24 @@ class AutoresController {
                 .select()
                 .single()
 
+            if(error)return next(error)
+
                 res.json(`Atualizada as informacoes do autor ${data.autor_nome}.`)
-
-        } catch (error) {
-            
-                res.status(500).json({ error: error.message })
-
-        }
 
     }
 
     static async deletarAutor (req, res, next) {
 
-        try {
+        
             
             const { error } = await supabase
                 .from('autores')
                 .delete()
                 .eq('autor_id', req.params.id)
 
-                res.status(200).send("Autor deletado com sucesso")
+            if(error)return next(error)
 
-        } catch (error) {
-            
-                res.status(500).json({ error: error.message })
-            
-        }
+                res.status(200).send("Autor deletado com sucesso")
 
     }
     
