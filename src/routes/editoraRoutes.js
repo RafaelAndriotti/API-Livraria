@@ -4,10 +4,10 @@ import { validaEditora } from "../validators/editoraValidator.js";
 
 const routes = express.Router();
 
-routes.get("/editoras",validaEditora , EditoraController.listarEditoras);
+routes.get("/editoras", EditoraController.listarEditoras);
 routes.post("/editoras",validaEditora , EditoraController.cadastrarEditora);
-routes.get("/editoras/:id",validaEditora , EditoraController.listarEditoraPorId);
+routes.get("/editoras/:id", EditoraController.listarEditoraPorId);
 routes.put("/editoras/:id",validaEditora , EditoraController.atualizarEditora);
-routes.delete("/editoras/:id",validaEditora , EditoraController.deletarEditora);
+routes.delete("/editoras/:id", EditoraController.deletarEditora);
 
 export default routes;

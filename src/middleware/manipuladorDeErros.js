@@ -3,7 +3,7 @@ import errosSupabase from "../lib/errosSupabase.js";
 
 // eslint-disable-next-line no-unused-vars
 function manipuladorDeErros(erro, req, res, next) {
-
+    
     //Verifica se eh um erro conhecido do supabase
     if (erro.code && errosSupabase[erro.code]){
         return errosSupabase[erro.code].enviarResposta(res)

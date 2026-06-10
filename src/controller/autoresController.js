@@ -37,7 +37,7 @@ class AutoresController {
             const { data, error } = await supabase
                 .from('autores')
                 .select("*")
-                .eq("autor_id", req.params.id)
+                .eq("id", req.params.id)
                 .single()
 
             if(error)return next(error)
@@ -53,7 +53,7 @@ class AutoresController {
             const { data, error } = await supabase
                 .from('autores')
                 .update ({ autor_nome, nacionalidade_autor,  data_nascimento, biografia})
-                .eq('autor_id', req.params.id)
+                .eq('id', req.params.id)
                 .select()
                 .single()
 
