@@ -3,7 +3,6 @@ import ErroValidacao from "../errors/ErroValidacao.js"
 
 const livroSchema = z.object({
 
-    id: z.uuid(),
     titulo: z.string(),
     autor_id: z.uuid(),
     editora_id: z.uuid(),
@@ -21,9 +20,9 @@ export function validaLivro(req, res, next) {
 
     const resultado = livroSchema.safeParse(req.body)
 
-    if(!resultado) {
+    if(!resultado.success) {
 
-        return next(ErroValidacao(resultado.error.erro[0].message))
+        return next(new ErroValidacao(resultado.error.erro[0].message))
 
     }
 

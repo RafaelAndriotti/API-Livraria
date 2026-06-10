@@ -14,7 +14,7 @@ export function validaEditora (req, res, next) {
     
     const resultado = editoraSchema.safeParse(req.body)
 
-    if(resultado.success){
+    if(!resultado.success){
 
         return next(new ErroValidacao(resultado.error.errors[0].message))
 
