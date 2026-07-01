@@ -4,7 +4,7 @@ import ErroValidacao from "../errors/ErroValidacao.js";
 const editoraSchema = z.object({
 
     nome_editora: z.string(),
-    pais_editrora: z.string(),
+    pais_editora: z.string(),
     site_editora: z.string().url(),
     email_contato: z.string().email()   
 
