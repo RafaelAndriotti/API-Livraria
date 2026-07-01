@@ -4,13 +4,44 @@ class AutoresController {
 
     static async listarAutores (req, res, next) {
 
-        
-            const { data, error } = await supabase
-                .from('autores')
-                .select("*")
+        //Valores da paginacao
+        const pagina = Math.max(1, parseInt(req.query.pagina) || 1)
+        const limite = Math.min(10, parseInt(req.query.limite) || 10)
 
+        //calculando o range (qtd de registros por pagina)
+        const from = (pagina - 1) * limite
+        const to = from + limite - 1
+            
+        const { autor_nome, nacionalidade_autor } = req.query
+
+        let query = supabase
+            .from('autores')
+            .select('*', { count: 'exact' })//Informa ao banco para retornar o total de registros juntos
+
+        //Vai aplicar o filtro se o parametro vier de acordo com as validacoes abaixo, sem isso ele sera ignorado e vai retornar todos os registros da tabela
+
+        if(autor_nome) query = query.ilike('autor_nome', `%${autor_nome}`)
+        if(nacionalidade_autor) query = query.ilike('nacionalidade_autor', `%${nacionalidade_autor}%`)
+            
+        query = query.range(from, to).order('autor_nome', { ascending: true })
+        
+        const {data, error, count} = await query
+        
             if(error) return next(error)
-            res.json(data)
+
+            res.json({
+                dados: data,
+                paginacao: {
+                    total: count,
+                    pagina,
+                    limite,
+                    total_pagina: Math.ceil(count/limite)
+                }
+            })
+
+        // const { data, error } = await supabase
+            //     .from('autores')
+            //     .select("*")    
 
     }
 
@@ -70,7 +101,7 @@ class AutoresController {
             const { error } = await supabase
                 .from('autores')
                 .delete()
-                .eq('autor_id', req.params.id)
+                .eq('id', req.params.id)
 
             if(error)return next(error)
 
