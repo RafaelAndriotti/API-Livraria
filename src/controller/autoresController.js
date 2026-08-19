@@ -1,116 +1,94 @@
-import { supabase } from '../lib/supabase.js';
+import prisma from '../lib/prisma.js';
+import ErroNaoEncontrado from '../errors/ErroNaoEncontrado.js';
 
 class AutoresController {
 
     static async listarAutores (req, res, next) {
+        try {
+            const pagina = Math.max(1, parseInt(req.query.pagina) || 1)
+            const limite = Math.min(10, parseInt(req.query.limite) || 10)
+            const skip = (pagina - 1) * limite
 
-        //Valores da paginacao
-        const pagina = Math.max(1, parseInt(req.query.pagina) || 1)
-        const limite = Math.min(10, parseInt(req.query.limite) || 10)
+            const { autor_nome, nacionalidade_autor } = req.query
 
-        //calculando o range (qtd de registros por pagina)
-        const from = (pagina - 1) * limite
-        const to = from + limite - 1
-            
-        const { autor_nome, nacionalidade_autor } = req.query
+            const where = {}
+            if (autor_nome) where.autor_nome = { contains: autor_nome, mode: 'insensitive' }
+            if (nacionalidade_autor) where.nacionalidade_autor = { contains: nacionalidade_autor, mode: 'insensitive' }
 
-        let query = supabase
-            .from('autores')
-            .select('*', { count: 'exact' })//Informa ao banco para retornar o total de registros juntos
-
-        //Vai aplicar o filtro se o parametro vier de acordo com as validacoes abaixo, sem isso ele sera ignorado e vai retornar todos os registros da tabela
-
-        if(autor_nome) query = query.ilike('autor_nome', `%${autor_nome}`)
-        if(nacionalidade_autor) query = query.ilike('nacionalidade_autor', `%${nacionalidade_autor}%`)
-            
-        query = query.range(from, to).order('autor_nome', { ascending: true })
-        
-        const {data, error, count} = await query
-        
-            if(error) return next(error)
+            const [dados, total] = await prisma.$transaction([
+                prisma.autor.findMany({
+                    where,
+                    skip,
+                    take: limite,
+                    orderBy: { autor_nome: 'asc' }
+                }),
+                prisma.autor.count({ where })
+            ])
 
             res.json({
-                dados: data,
+                dados,
                 paginacao: {
-                    total: count,
+                    total,
                     pagina,
                     limite,
-                    total_pagina: Math.ceil(count/limite)
+                    total_pagina: Math.ceil(total / limite)
                 }
             })
-
-        // const { data, error } = await supabase
-            //     .from('autores')
-            //     .select("*")    
-
+        } catch (erro) {
+            next(erro)
+        }
     }
 
-
     static async cadastrarAutor (req, res, next) {
-        
+        try {
             const { autor_nome, nacionalidade_autor, data_nascimento, biografia } = req.body
-            
-            // eslint-disable-next-line no-unused-vars
-            const { data, error } = await supabase
-                .from('autores')
-                .insert({ autor_nome, nacionalidade_autor, data_nascimento, biografia })
-                .select()
-                .single()
 
-            if(error) return next(error)
-        
+            await prisma.autor.create({
+                data: { autor_nome, nacionalidade_autor, data_nascimento, biografia }
+            })
+
             res.status(201).json({ message: `O autor ${autor_nome} foi cadastrado com sucesso.` })
-    
+        } catch (erro) {
+            next(erro)
+        }
     }
 
     static async listarAutorPorId (req, res, next) {
-            
-            const { data, error } = await supabase
-                .from('autores')
-                .select("*")
-                .eq("id", req.params.id)
-                .single()
+        try {
+            const autor = await prisma.autor.findUnique({ where: { id: req.params.id } })
 
-            if(error)return next(error)
+            if (!autor) return next(new ErroNaoEncontrado())
 
-            res.json(data)
- 
+            res.json(autor)
+        } catch (erro) {
+            next(erro)
+        }
     }
 
-    static async atualizarAutor (req, res, next){
-
+    static async atualizarAutor (req, res, next) {
+        try {
             const { autor_nome, nacionalidade_autor, data_nascimento, biografia } = req.body
 
-            const { data, error } = await supabase
-                .from('autores')
-                .update ({ autor_nome, nacionalidade_autor,  data_nascimento, biografia})
-                .eq('id', req.params.id)
-                .select()
-                .single()
+            const autor = await prisma.autor.update({
+                where: { id: req.params.id },
+                data: { autor_nome, nacionalidade_autor, data_nascimento, biografia }
+            })
 
-            if(error)return next(error)
-
-                res.json(`Atualizada as informacoes do autor ${data.autor_nome}.`)
-
+            res.json(`Atualizada as informacoes do autor ${autor.autor_nome}.`)
+        } catch (erro) {
+            next(erro)
+        }
     }
 
     static async deletarAutor (req, res, next) {
+        try {
+            await prisma.autor.delete({ where: { id: req.params.id } })
 
-        
-            
-            const { error } = await supabase
-                .from('autores')
-                .delete()
-                .eq('id', req.params.id)
-
-            if(error)return next(error)
-
-                res.status(200).send("Autor deletado com sucesso")
-
+            res.status(200).send("Autor deletado com sucesso")
+        } catch (erro) {
+            next(erro)
+        }
     }
-    
-
 }
 
 export default AutoresController;
-
