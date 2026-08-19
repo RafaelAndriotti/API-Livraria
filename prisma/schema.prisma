@@ -1,0 +1,58 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Autor {
+  id                  String  @id @default(uuid()) @db.Uuid
+  autor_nome          String
+  nacionalidade_autor String
+  data_nascimento     String
+  biografia           String
+  livros              Livro[]
+
+  @@map("autores")
+}
+
+model Editora {
+  id            String  @id @default(uuid()) @db.Uuid
+  nome_editora  String
+  pais_editora  String
+  site_editora  String
+  email_contato String
+  livros        Livro[]
+
+  @@map("editoras")
+}
+
+model Livro {
+  id             String  @id @default(uuid()) @db.Uuid
+  titulo         String
+  autor_id       String  @db.Uuid
+  editora_id     String  @db.Uuid
+  isbn           String  @unique
+  preco          Float
+  paginas        Int
+  ano_publicacao Int
+  genero         String
+  estoque        Int
+  sinopse        String
+  autor          Autor   @relation(fields: [autor_id], references: [id])
+  editora        Editora @relation(fields: [editora_id], references: [id])
+
+  @@map("livros")
+}
+
+model Usuario {
+  id        String   @id @default(uuid()) @db.Uuid
+  nome      String
+  email     String   @unique
+  senha     String
+  criado_em DateTime @default(now())
+
+  @@map("usuarios")
+}

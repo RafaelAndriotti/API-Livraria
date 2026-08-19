@@ -22,7 +22,7 @@ export function validaLivro(req, res, next) {
 
     if(!resultado.success) {
 
-        return next(new ErroValidacao(resultado.error.erro[0].message))
+        return next(new ErroValidacao(resultado.error.issues[0].message))
 
     }
 

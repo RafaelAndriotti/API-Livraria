@@ -1,0 +1,21 @@
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: livraria_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-livraria}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-livraria}
+      POSTGRES_DB: ${POSTGRES_DB:-livraria}
+    ports:
+      - "55432:5432"
+    volumes:
+      - livraria_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-livraria} -d ${POSTGRES_DB:-livraria}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  livraria_pgdata:

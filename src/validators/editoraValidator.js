@@ -16,7 +16,7 @@ export function validaEditora (req, res, next) {
 
     if(!resultado.success){
 
-        return next(new ErroValidacao(resultado.error.errors[0].message))
+        return next(new ErroValidacao(resultado.error.issues[0].message))
 
     }
 
