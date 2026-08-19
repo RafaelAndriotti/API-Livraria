@@ -1,7 +1,7 @@
 # Implementação: PostgreSQL + Docker, Prisma ORM e Autenticação JWT
 
 Este documento descreve, em detalhes, todas as mudanças feitas nesta branch
-(`claude-teste`) para migrar a API-Livraria do Supabase para uma stack baseada
+(`login/banco`) para migrar a API-Livraria do Supabase para uma stack baseada
 em **PostgreSQL rodando em Docker**, **Prisma como ORM** e **autenticação via
 JWT com senhas protegidas por bcrypt**.
 
